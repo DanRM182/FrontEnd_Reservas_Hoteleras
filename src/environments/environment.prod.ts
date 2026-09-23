@@ -1,5 +1,6 @@
 export const environment = {
     production: true,
-    authUrl: 'http://localhost:9000',
-    apiUrl: 'http://localhost:8090'
+    authUrl: '/auth-api',
+    // Nginx dirige las peticiones a los servicios del hotel.
+    apiUrl: ''
 };

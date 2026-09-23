@@ -4,44 +4,50 @@
 <div class="grid-cards">
 
   <!-- Reservaciones -->
-  <mat-card class="card-metrica deshabilitada">
+  <mat-card class="card-metrica">
     <mat-card-content>
       <mat-icon class="icono">calendar_month</mat-icon>
       <div>
-        <p class="numero">—</p>
+        <p class="numero">{{ cargandoReservas ? '—' : (reservasActivas ?? '—') }}</p>
         <p class="etiqueta">Reservaciones activas</p>
+        <p *ngIf="errorReservas" class="error" role="alert">No se pudo cargar el total.</p>
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <span class="pronto">Próximamente</span>
+      <a mat-button color="primary" routerLink="/reservaciones">Ver reservaciones</a>
+      <button mat-button *ngIf="errorReservas" (click)="cargarReservas()">Reintentar</button>
     </mat-card-actions>
   </mat-card>
 
   <!-- Habitaciones -->
-  <mat-card class="card-metrica deshabilitada">
+  <mat-card class="card-metrica">
     <mat-card-content>
       <mat-icon class="icono">bed</mat-icon>
       <div>
-        <p class="numero">—</p>
+        <p class="numero">{{ cargandoHabitaciones ? '—' : (habitacionesDisponibles ?? '—') }}</p>
         <p class="etiqueta">Habitaciones disponibles</p>
+        <p *ngIf="errorHabitaciones" class="error" role="alert">No se pudo cargar el total.</p>
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <span class="pronto">Próximamente</span>
+      <a mat-button color="primary" routerLink="/habitaciones">Ver habitaciones</a>
+      <button mat-button *ngIf="errorHabitaciones" (click)="cargarHabitaciones()">Reintentar</button>
     </mat-card-actions>
   </mat-card>
 
   <!-- Huéspedes -->
-  <mat-card class="card-metrica deshabilitada">
+  <mat-card class="card-metrica">
     <mat-card-content>
       <mat-icon class="icono">people</mat-icon>
       <div>
-        <p class="numero">—</p>
+        <p class="numero">{{ cargandoHuespedes ? '—' : (totalHuespedes ?? '—') }}</p>
         <p class="etiqueta">Huéspedes registrados</p>
+        <p *ngIf="errorHuespedes" class="error" role="alert">No se pudo cargar el total.</p>
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <span class="pronto">Próximamente</span>
+      <a mat-button color="primary" routerLink="/huespedes">Ver huéspedes</a>
+      <button mat-button *ngIf="errorHuespedes" (click)="cargarHuespedes()">Reintentar</button>
     </mat-card-actions>
   </mat-card>
 

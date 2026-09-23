@@ -1,0 +1,59 @@
+<mat-toolbar color="primary" class="encabezado">
+  <span>Habitaciones</span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="buscar()" [disabled]="cargando || eliminandoId !== null" matTooltip="Actualizar listado" aria-label="Actualizar listado">
+    <mat-icon>refresh</mat-icon>
+  </button>
+  <button mat-raised-button color="accent" (click)="abrirFormulario()" [disabled]="eliminandoId !== null">
+    <mat-icon>add</mat-icon> Nueva habitación
+  </button>
+</mat-toolbar>
+<div class="loading" *ngIf="cargando" role="status" aria-label="Cargando habitaciones">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+<div class="error" *ngIf="error && !cargando" role="alert">
+  <p>{{ error }}</p>
+  <button mat-button color="primary" (click)="buscar()">Reintentar</button>
+</div>
+<div class="tabla-contenedor" *ngIf="!cargando && !error && registros.length">
+  <table mat-table [dataSource]="registros" class="mat-elevation-z2">
+    <ng-container matColumnDef="numeroHabitacion">
+      <th mat-header-cell *matHeaderCellDef>Número</th>
+      <td mat-cell *matCellDef="let registro">{{ registro.numeroHabitacion }}</td>
+    </ng-container>
+    <ng-container matColumnDef="tipoHabitacion">
+      <th mat-header-cell *matHeaderCellDef>Tipo</th>
+      <td mat-cell *matCellDef="let registro">{{ registro.tipoHabitacion }}</td>
+    </ng-container>
+    <ng-container matColumnDef="precio">
+      <th mat-header-cell *matHeaderCellDef>Precio</th>
+      <td mat-cell *matCellDef="let registro">{{ registro.precio | number:'1.2-2' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="capacidad">
+      <th mat-header-cell *matHeaderCellDef>Capacidad</th>
+      <td mat-cell *matCellDef="let registro">{{ registro.capacidad }}</td>
+    </ng-container>
+    <ng-container matColumnDef="estadoHabitacion">
+      <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <td mat-cell *matCellDef="let registro"><mat-chip-set><mat-chip>{{ registro.estadoHabitacion }}</mat-chip></mat-chip-set></td>
+    </ng-container>
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let registro" class="acciones">
+        <span [matTooltip]="estaOcupada(registro) ? 'No se puede editar una habitación ocupada' : 'Editar'">
+          <button mat-icon-button color="primary" (click)="abrirFormulario(registro)" [disabled]="eliminandoId !== null || estaOcupada(registro)"
+            [attr.aria-label]="'Editar ' + registro.numeroHabitacion"><mat-icon>edit</mat-icon></button>
+        </span>
+        <button mat-icon-button (click)="cambiarEstado(registro)" [disabled]="eliminandoId !== null"
+          matTooltip="Cambiar estado" [attr.aria-label]="'Cambiar estado de ' + registro.numeroHabitacion"><mat-icon>sync</mat-icon></button>
+        <span [matTooltip]="estaOcupada(registro) ? 'No se puede eliminar una habitación ocupada' : 'Eliminar'">
+          <button mat-icon-button color="warn" (click)="eliminar(registro)" [disabled]="eliminandoId !== null || estaOcupada(registro)"
+            [attr.aria-label]="'Eliminar ' + registro.numeroHabitacion"><mat-icon>delete</mat-icon></button>
+        </span>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+  </table>
+</div>
+<p class="sin-datos" *ngIf="!cargando && !error && !registros.length">No hay habitaciones registradas.</p>

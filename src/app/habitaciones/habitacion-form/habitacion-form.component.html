@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>{{ data ? 'Editar habitación' : 'Nueva habitación' }}</h2>
+<form [formGroup]="form" (ngSubmit)="guardar()">
+  <mat-dialog-content>
+    <p *ngIf="!data" class="ayuda">La habitación se registrará como disponible.</p>
+    <fieldset [disabled]="guardando">
+      <mat-form-field appearance="outline">
+        <mat-label>Número de habitación</mat-label>
+        <input matInput formControlName="numeroHabitacion" maxlength="20" placeholder="101A">
+        <mat-error>Ingresa un número sin cero inicial y una letra mayúscula opcional (ejemplo: 101A).</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="idTipoHabitacion">
+          <mat-option *ngFor="let tipo of tipos" [value]="tipo.id" [disabled]="guardando">{{ tipo.etiqueta }}</mat-option>
+        </mat-select>
+        <mat-error>Selecciona un tipo de habitación.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Precio</mat-label>
+        <input matInput type="number" formControlName="precio" min="0.01" max="99999999.99" step="0.01">
+        <mat-error>El precio debe ser mayor a cero, con máximo 8 enteros y 2 decimales.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Capacidad</mat-label>
+        <input matInput type="number" formControlName="capacidad" min="1" step="1">
+        <mat-error>Ingresa una capacidad entera entre 1 y 2147483647.</mat-error>
+      </mat-form-field>
+    </fieldset>
+    <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="guardando">{{ guardando ? 'Guardando...' : 'Guardar' }}</button>
+  </mat-dialog-actions>
+</form>

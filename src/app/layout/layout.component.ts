@@ -24,9 +24,9 @@ export class LayoutComponent implements OnInit {
 
   menuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', disponible: true },
-    { label: 'Reservaciones', icon: 'calendar_month', route: '/reservaciones', disponible: false },
-    { label: 'Habitaciones', icon: 'bed', route: '/habitaciones', disponible: false },
-    { label: 'Huéspedes', icon: 'people', route: '/huespedes', disponible: false },
+    { label: 'Reservaciones', icon: 'calendar_month', route: '/reservaciones', disponible: true },
+    { label: 'Habitaciones', icon: 'bed', route: '/habitaciones', disponible: true },
+    { label: 'Huéspedes', icon: 'people', route: '/huespedes', disponible: true },
     { label: 'Usuarios', icon: 'manage_accounts', route: '/usuarios', disponible: true }
   ];
 

@@ -1,0 +1,8 @@
+.spacer { flex: 1 1 auto; }
+.encabezado { gap: 8px; flex-wrap: wrap; height: auto; min-height: 64px; padding: 12px; }
+.tabla-contenedor { overflow-x: auto; }
+table { width: 100%; }
+.acciones { white-space: nowrap; }
+.loading, .sin-datos, .error { padding: 24px; text-align: center; }
+.loading { display: flex; justify-content: center; }
+.error { color: var(--mat-sys-error); }

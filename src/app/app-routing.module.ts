@@ -21,6 +21,21 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       {
+        path: 'reservaciones',
+        canActivate: [authGuard],
+        loadChildren: () => import('./reservas/reservas.module').then(m => m.ReservasModule)
+      },
+      {
+        path: 'habitaciones',
+        canActivate: [authGuard],
+        loadChildren: () => import('./habitaciones/habitaciones.module').then(m => m.HabitacionesModule)
+      },
+      {
+        path: 'huespedes',
+        canActivate: [authGuard],
+        loadChildren: () => import('./huespedes/huespedes.module').then(m => m.HuespedesModule)
+      },
+      {
         path: 'usuarios',
         canActivate: [roleGuard],
         data: { roles: [ROLES[0]]},

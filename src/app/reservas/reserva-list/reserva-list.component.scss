@@ -1,0 +1,7 @@
+.spacer { flex: 1 1 auto; }
+.tabla-contenedor { overflow-x: auto; }
+table { width: 100%; }
+.loading, .sin-datos, .error { padding: 24px; text-align: center; }
+.loading { display: flex; justify-content: center; }
+.error { color: var(--mat-sys-error); }
+.ayuda { color: var(--mat-sys-on-surface-variant); }

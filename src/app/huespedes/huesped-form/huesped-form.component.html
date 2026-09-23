@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>{{ data ? 'Editar huésped' : 'Nuevo huésped' }}</h2>
+<form [formGroup]="form" (ngSubmit)="guardar()">
+  <mat-dialog-content>
+    <p *ngIf="data" class="ayuda">
+      Nombre registrado: <strong>{{ data.nombre }}</strong>.
+      Para guardar, confirma el nombre y cada apellido en los campos correspondientes.
+    </p>
+    <fieldset [disabled]="guardando">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre(s)</mat-label>
+        <input matInput formControlName="nombre" maxlength="50" autocomplete="given-name">
+        <mat-error>El nombre debe tener entre 2 y 50 caracteres.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Apellido paterno</mat-label>
+        <input matInput formControlName="apellidoPaterno" maxlength="50">
+        <mat-error>El apellido paterno debe tener entre 2 y 50 caracteres.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Apellido materno</mat-label>
+        <input matInput formControlName="apellidoMaterno" maxlength="50">
+        <mat-error>El apellido materno debe tener entre 2 y 50 caracteres.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" formControlName="email" maxlength="100" autocomplete="email">
+        <mat-error>Ingresa un correo válido de 8 a 100 caracteres, con dominio de 2 a 6 letras.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput type="tel" inputmode="numeric" formControlName="telefono" maxlength="10" autocomplete="tel">
+        <mat-error>El teléfono debe contener exactamente 10 dígitos.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Documento de identificación</mat-label>
+        <input matInput formControlName="documento" maxlength="25">
+        <mat-error>El documento es obligatorio, con máximo 25 caracteres.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Nacionalidad</mat-label>
+        <input matInput formControlName="nacionalidad" maxlength="25">
+        <mat-error>La nacionalidad es obligatoria, con máximo 25 caracteres.</mat-error>
+      </mat-form-field>
+    </fieldset>
+    <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="guardando">{{ guardando ? 'Guardando...' : 'Guardar' }}</button>
+  </mat-dialog-actions>
+</form>

@@ -3,5 +3,8 @@ services:
     image: reservas-app-front:latest
     build: .
     container_name: NOMBRE_PROYECTO-front
+    environment:
+      GATEWAY_URL: ${DOCKER_GATEWAY_URL:?Configura DOCKER_GATEWAY_URL en .env sin barra final}
+      AUTH_URL: ${DOCKER_AUTH_URL:?Configura DOCKER_AUTH_URL en .env sin barra final}
     ports:
-      - "4200:80"
+      - "${FRONTEND_PORT:?Configura FRONTEND_PORT en .env}:80"
