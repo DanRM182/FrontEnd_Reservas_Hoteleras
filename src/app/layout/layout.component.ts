@@ -8,6 +8,7 @@ interface MenuItem {
   icon: string;
   route: string;
   disponible: boolean;
+  soloAdmin?: boolean;
 }
 
 @Component({
@@ -27,7 +28,8 @@ export class LayoutComponent implements OnInit {
     { label: 'Reservaciones', icon: 'calendar_month', route: '/reservaciones', disponible: true },
     { label: 'Habitaciones', icon: 'bed', route: '/habitaciones', disponible: true },
     { label: 'Huéspedes', icon: 'people', route: '/huespedes', disponible: true },
-    { label: 'Usuarios', icon: 'manage_accounts', route: '/usuarios', disponible: true }
+    { label: 'Usuarios', icon: 'manage_accounts', route: '/usuarios', disponible: true, soloAdmin: true },
+    { label: 'Reportes', icon: 'assessment', route: '/reportes', disponible: true, soloAdmin: true }
   ];
 
   constructor(

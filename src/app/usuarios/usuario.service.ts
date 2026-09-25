@@ -21,11 +21,7 @@ export class UsuarioService {
     return this.http.post<UsuarioResponse>(this.baseUrl, request);
   }
 
-  actualizar(username: string, request: UsuarioRequest): Observable<UsuarioResponse> {
-    return this.http.put<UsuarioResponse>(`${this.baseUrl}/${username}`, request);
-  }
-
-  eliminar(username: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${username}`);
+  eliminar(username: string): Observable<UsuarioResponse> {
+    return this.http.delete<UsuarioResponse>(`${this.baseUrl}/${encodeURIComponent(username)}`);
   }
 }

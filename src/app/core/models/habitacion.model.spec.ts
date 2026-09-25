@@ -25,8 +25,8 @@ describe('Catálogos y reglas de habitaciones', () => {
     const ocupada = { ...habitacion, estadoHabitacion: 'Ocupado' };
     expect(estaOcupada(ocupada)).toBeTrue();
     expect(puedeCambiarEstado(ocupada, 1)).toBeFalse();
-    expect(puedeCambiarEstado(ocupada, 3)).toBeTrue();
-    expect(puedeCambiarEstado(ocupada, 4)).toBeTrue();
+    expect(puedeCambiarEstado(ocupada, 3)).toBeFalse();
+    expect(puedeCambiarEstado(ocupada, 4)).toBeFalse();
   });
 
   it('no cambia estados que no conoce', () => {

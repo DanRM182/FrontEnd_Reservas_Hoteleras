@@ -31,6 +31,7 @@ export class LoginComponent {
   }
 
   ingresar(): void {
+    if (this.cargando) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -45,7 +46,7 @@ export class LoginComponent {
       },
       error: (err) => {
         this.cargando = false;
-        const msg = err.status === 401 ? 'Credenciales inválidas' : 'Error al conectar con el servidor';
+        const msg = err.status === 401 || (err.status === 400 && err.error?.mensaje === 'Credenciales inválidas') ? 'Credenciales inválidas' : 'Error al conectar con el servidor';
         this.snackBar.open(msg, 'Cerrar', { duration: 3000 });
       }
     });

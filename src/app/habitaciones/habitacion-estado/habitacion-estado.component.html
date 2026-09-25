@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Estado de habitación {{ data.numeroHabitacion }}</h2>
 <mat-dialog-content>
   <p class="ayuda">Estado actual: {{ data.estadoHabitacion }}. La ocupación se realiza mediante una reserva.</p>
-  <p *ngIf="estaOcupada(data)" class="ayuda">Una habitación ocupada no puede cambiarse manualmente a disponible.</p>
+  <p *ngIf="estaOcupada(data)" class="ayuda">Gestiona la ocupación desde la reserva antes de cambiar manualmente el estado.</p>
   <mat-form-field appearance="outline">
     <mat-label>Estado</mat-label>
     <mat-select [formControl]="estado">

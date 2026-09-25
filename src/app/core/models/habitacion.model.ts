@@ -45,5 +45,5 @@ export function puedeCambiarEstado(habitacion: HabitacionResponse, destino: Esta
   const origen = obtenerEstadoHabitacionId(habitacion.estadoHabitacion);
   return origen !== null && destino !== null &&
     ESTADOS_HABITACION.some(estado => estado.id === destino) &&
-    destino !== origen && destino !== 2 && !(origen === 2 && destino === 1);
+    destino !== origen && destino !== 2 && origen !== 2;
 }

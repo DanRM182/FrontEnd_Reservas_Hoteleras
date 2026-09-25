@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>{{ data ? 'Modificar fechas de reserva' : 'Nueva reserva' }}</h2>
+<form [formGroup]="form" (ngSubmit)="guardar()">
+  <mat-dialog-content>
+    <div class="loading" *ngIf="cargando"><mat-spinner diameter="32" aria-label="Cargando datos"></mat-spinner></div>
+    <p class="ayuda" *ngIf="!data">La habitación quedará ocupada desde el registro de la reserva.</p>
+    <p class="ayuda" *ngIf="reserva">Huésped: <strong>{{ reserva.huesped?.nombre }}</strong><br>Habitación: <strong>{{ reserva.habitacion?.numeroHabitacion }}</strong><br>{{ enCurso ? 'Solo puedes modificar la fecha de salida.' : 'Puedes modificar las fechas; huésped y habitación permanecen iguales.' }}</p>
+    <fieldset [disabled]="guardando || cargando">
+      <ng-container *ngIf="!data">
+        <mat-form-field appearance="outline">
+          <mat-label>Huésped</mat-label>
+          <mat-select formControlName="idHuesped">
+            <mat-option *ngFor="let h of huespedes" [value]="h.id" [disabled]="guardando || cargando">{{ h.nombre }} · {{ h.documento }}</mat-option>
+          </mat-select>
+          <mat-error>Selecciona un huésped registrado.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Habitación disponible</mat-label>
+          <mat-select formControlName="idHabitacion">
+            <mat-option *ngFor="let h of habitaciones" [value]="h.id" [disabled]="guardando || cargando">{{ h.numeroHabitacion }} · {{ h.tipoHabitacion }} · {{ h.precio | number:'1.2-2' }}</mat-option>
+          </mat-select>
+          <mat-error>Selecciona una habitación disponible.</mat-error>
+        </mat-form-field>
+      </ng-container>
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha de entrada</mat-label>
+        <input matInput type="date" formControlName="fechaEntrada" [min]="enCurso ? '' : hoy">
+        <mat-error>Ingresa una fecha de entrada válida.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha de salida</mat-label>
+        <input matInput type="date" formControlName="fechaSalida" [min]="hoy">
+        <mat-error>Ingresa una fecha de salida válida.</mat-error>
+      </mat-form-field>
+    </fieldset>
+    <p *ngIf="bloqueo" class="error" role="alert">{{ bloqueo }}</p>
+    <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+    <button mat-button type="button" (click)="cargar()" [disabled]="cargando || guardando">Actualizar datos</button>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" [mat-dialog-close]="false" [disabled]="guardando">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="guardando || cargando || !!bloqueo || !permisos.operar">{{ guardando ? 'Guardando...' : 'Guardar' }}</button>
+  </mat-dialog-actions>
+</form>

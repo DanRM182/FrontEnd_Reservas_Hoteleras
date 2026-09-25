@@ -6,8 +6,8 @@ export const ROLES = [
 export type Rol = typeof ROLES[number];
 
 export const ROL_LABELS: Record<Rol, string> = {
-  ROLE_ADMIN: 'Administrador',
-  ROLE_USER: 'Usuario'
+  ROLE_ADMIN: 'Gerente',
+  ROLE_USER: 'Recepcionista'
 };
 
 export const ROLES_CATALOGO: { id: Rol; label: string }[] = [

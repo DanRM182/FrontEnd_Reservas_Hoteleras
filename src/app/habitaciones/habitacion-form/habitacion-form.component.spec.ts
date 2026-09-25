@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { HabitacionesModule } from '../habitaciones.module';
 import { HabitacionService } from '../habitacion.service';
 import { HabitacionFormComponent } from './habitacion-form.component';
+import { PermisosService } from '../../core/services/permisos.service';
 
 describe('Formulario de habitaciones', () => {
   const data = { id: 5, numeroHabitacion: '101A', tipoHabitacion: 'Habitacion con cama doble', estadoHabitacion: 'Disponible', precio: 1500, capacidad: 2 };
@@ -17,6 +18,7 @@ describe('Formulario de habitaciones', () => {
     TestBed.configureTestingModule({
       imports: [HabitacionesModule, NoopAnimationsModule],
       providers: [
+        { provide: PermisosService, useValue: { operar: true, administrar: true } },
         { provide: HabitacionService, useValue: service },
         { provide: MAT_DIALOG_DATA, useValue: { ...data } },
         { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close'), disableClose: false } },

@@ -1,4 +1,5 @@
 .spacer { flex: 1 1 auto; }
+.acciones { white-space: nowrap; }
 .tabla-contenedor { overflow-x: auto; }
 table { width: 100%; }
 .loading, .sin-datos, .error { padding: 24px; text-align: center; }

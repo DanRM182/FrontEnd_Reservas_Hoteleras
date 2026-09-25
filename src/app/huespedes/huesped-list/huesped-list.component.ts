@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { PermisosService } from '../../core/services/permisos.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
@@ -15,6 +16,7 @@ import { HuespedFormComponent } from '../huesped-form/huesped-form.component';
   styleUrl: './huesped-list.component.scss'
 })
 export class HuespedListComponent implements OnInit {
+  readonly permisos = inject(PermisosService);
   registros: HuespedResponse[] = [];
   columnas = ['nombre', 'email', 'telefono', 'documento', 'nacionalidad', 'acciones'];
   cargando = false;
@@ -27,7 +29,10 @@ export class HuespedListComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void { this.buscar(); }
+  ngOnInit(): void {
+    if (!this.permisos.administrar) this.columnas = this.columnas.filter(c => c !== 'acciones');
+    this.buscar();
+  }
 
   buscar(): void {
     if (this.cargando) return;
@@ -40,6 +45,7 @@ export class HuespedListComponent implements OnInit {
   }
 
   abrirFormulario(registro?: HuespedResponse): void {
+    if (!this.permisos.operar || (registro && !this.permisos.administrar)) return;
     const ref = this.dialog.open(HuespedFormComponent, {
       width: '560px',
       maxWidth: '95vw',
@@ -49,6 +55,7 @@ export class HuespedListComponent implements OnInit {
   }
 
   eliminar(registro: HuespedResponse): void {
+    if (!this.permisos.administrar) return;
     if (this.eliminandoId !== null) return;
     if (!confirm(`¿Eliminar huésped "${registro.nombre}"? Dejará de aparecer en el listado de registros activos.`)) return;
     this.eliminandoId = registro.id;

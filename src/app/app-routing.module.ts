@@ -17,22 +17,32 @@ const routes: Routes = [
     path: '',
     component: LayoutComponent,
     canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardComponent },
+      { path: 'dashboard', component: DashboardComponent, canActivate: [roleGuard], data: { roles: [...ROLES] } },
+      {
+        path: 'reportes',
+        canActivate: [roleGuard],
+        data: { roles: ['ROLE_ADMIN'] },
+        loadChildren: () => import('./reportes/reportes.module').then(m => m.ReportesModule)
+      },
       {
         path: 'reservaciones',
-        canActivate: [authGuard],
+        canActivate: [roleGuard],
+        data: { roles: [...ROLES] },
         loadChildren: () => import('./reservas/reservas.module').then(m => m.ReservasModule)
       },
       {
         path: 'habitaciones',
-        canActivate: [authGuard],
+        canActivate: [roleGuard],
+        data: { roles: [...ROLES] },
         loadChildren: () => import('./habitaciones/habitaciones.module').then(m => m.HabitacionesModule)
       },
       {
         path: 'huespedes',
-        canActivate: [authGuard],
+        canActivate: [roleGuard],
+        data: { roles: [...ROLES] },
         loadChildren: () => import('./huespedes/huespedes.module').then(m => m.HuespedesModule)
       },
       {

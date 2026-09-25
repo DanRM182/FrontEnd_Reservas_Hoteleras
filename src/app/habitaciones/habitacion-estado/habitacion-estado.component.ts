@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { PermisosService } from '../../core/services/permisos.service';
 import { FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,6 +15,7 @@ import { HabitacionService } from '../habitacion.service';
   styleUrl: './habitacion-estado.component.scss'
 })
 export class HabitacionEstadoComponent {
+  readonly permisos = inject(PermisosService);
   estado: FormControl<EstadoHabitacionId | null>;
   readonly estados = ESTADOS_HABITACION;
   readonly estaOcupada = estaOcupada;
@@ -34,6 +36,7 @@ export class HabitacionEstadoComponent {
   }
 
   guardar(): void {
+    if (!this.permisos.administrar) return;
     const idEstado = this.estado.value;
     if (this.guardando || this.estado.invalid || idEstado === null || !this.permitido(idEstado)) return;
     this.guardando = true;

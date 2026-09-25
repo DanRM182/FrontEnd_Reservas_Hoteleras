@@ -10,7 +10,7 @@
     <mat-nav-list>
       <ng-container *ngFor="let item of menuItems">
         <a mat-list-item
-           *ngIf="item.label !== 'Usuarios' || isAdmin"
+           *ngIf="!item.soloAdmin || isAdmin"
            [routerLink]="item.disponible ? item.route : null"
            routerLinkActive="activo"
            [class.deshabilitado]="!item.disponible">

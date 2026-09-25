@@ -1,0 +1,26 @@
+<mat-toolbar color="primary"><span>Reportes de gerencia</span><span class="spacer"></span><button mat-icon-button (click)="cargar()" [disabled]="cargando" aria-label="Actualizar reporte"><mat-icon>refresh</mat-icon></button></mat-toolbar>
+<p>Resumen de registros actuales, sin incluir registros eliminados. No representa un histórico de ocupación ni de ingresos.</p>
+<div class="loading" *ngIf="cargando"><mat-spinner diameter="40"></mat-spinner></div>
+<p *ngIf="error" role="alert" class="error">{{ error }} <button mat-button (click)="cargar()">Reintentar</button></p>
+<ng-container *ngIf="reporte && !cargando">
+  <p>Actualizado: {{ reporte.actualizado | date:'dd/MM/yyyy HH:mm' }}</p>
+  <div class="grid">
+    <mat-card><mat-card-content><h2>{{ reporte.totalHabitaciones }}</h2><p>Habitaciones registradas</p></mat-card-content></mat-card>
+    <mat-card><mat-card-content><h2>{{ reporte.totalHuespedes }}</h2><p>Huéspedes registrados</p></mat-card-content></mat-card>
+    <mat-card><mat-card-content><h2>{{ reporte.totalReservas }}</h2><p>Reservas registradas</p></mat-card-content></mat-card>
+  </div>
+  <h2>Habitaciones por estado</h2>
+  <table mat-table [dataSource]="reporte.habitaciones">
+    <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let r">{{ r.estado }}</td></ng-container>
+    <ng-container matColumnDef="total"><th mat-header-cell *matHeaderCellDef>Total</th><td mat-cell *matCellDef="let r">{{ r.total }}</td></ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnas"></tr><tr mat-row *matRowDef="let row; columns: columnas"></tr>
+  </table>
+  <p *ngIf="!reporte.habitaciones.length">No hay habitaciones registradas.</p>
+  <h2>Reservas por estado</h2>
+  <table mat-table [dataSource]="reporte.reservas">
+    <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let r">{{ r.estado }}</td></ng-container>
+    <ng-container matColumnDef="total"><th mat-header-cell *matHeaderCellDef>Total</th><td mat-cell *matCellDef="let r">{{ r.total }}</td></ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnas"></tr><tr mat-row *matRowDef="let row; columns: columnas"></tr>
+  </table>
+  <p *ngIf="!reporte.reservas.length">No hay reservas registradas.</p>
+</ng-container>

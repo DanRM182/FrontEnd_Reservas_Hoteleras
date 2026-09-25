@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { PermisosService } from '../../core/services/permisos.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
@@ -15,6 +16,7 @@ import { HabitacionEstadoComponent } from '../habitacion-estado/habitacion-estad
   styleUrl: './habitacion-list.component.scss'
 })
 export class HabitacionListComponent implements OnInit {
+  readonly permisos = inject(PermisosService);
   registros: HabitacionResponse[] = [];
   columnas = ['numeroHabitacion', 'tipoHabitacion', 'precio', 'capacidad', 'estadoHabitacion', 'acciones'];
   readonly estaOcupada = estaOcupada;
@@ -28,7 +30,10 @@ export class HabitacionListComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void { this.buscar(); }
+  ngOnInit(): void {
+    if (!this.permisos.administrar) this.columnas = this.columnas.filter(c => c !== 'acciones');
+    this.buscar();
+  }
 
   buscar(): void {
     if (this.cargando) return;
@@ -41,6 +46,7 @@ export class HabitacionListComponent implements OnInit {
   }
 
   abrirFormulario(registro?: HabitacionResponse): void {
+    if (!this.permisos.administrar) return;
     if (registro && estaOcupada(registro)) return;
     const ref = this.dialog.open(HabitacionFormComponent, {
       width: '500px',
@@ -51,11 +57,13 @@ export class HabitacionListComponent implements OnInit {
   }
 
   cambiarEstado(registro: HabitacionResponse): void {
+    if (!this.permisos.administrar || estaOcupada(registro)) return;
     const ref = this.dialog.open(HabitacionEstadoComponent, { width: '450px', maxWidth: '95vw', data: registro });
     ref.afterClosed().subscribe(guardado => { if (guardado) this.buscar(); });
   }
 
   eliminar(registro: HabitacionResponse): void {
+    if (!this.permisos.administrar) return;
     if (this.eliminandoId !== null || estaOcupada(registro)) return;
     if (!confirm(`¿Eliminar habitación "${registro.numeroHabitacion}"? Dejará de aparecer en el listado de registros activos.`)) return;
     this.eliminandoId = registro.id;

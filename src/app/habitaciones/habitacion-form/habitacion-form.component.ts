@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { PermisosService } from '../../core/services/permisos.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,6 +15,7 @@ import { HabitacionService } from '../habitacion.service';
   styleUrl: './habitacion-form.component.scss'
 })
 export class HabitacionFormComponent {
+  readonly permisos = inject(PermisosService);
   form: FormGroup;
   guardando = false;
   error = '';
@@ -35,6 +37,7 @@ export class HabitacionFormComponent {
   }
 
   guardar(): void {
+    if (!this.permisos.administrar) return;
     if (this.guardando) return;
     if (this.data && estaOcupada(this.data)) {
       this.error = 'No se puede editar una habitación ocupada.';

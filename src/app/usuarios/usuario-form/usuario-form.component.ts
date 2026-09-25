@@ -4,6 +4,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UsuarioResponse, UsuarioRequest, ROLES_CATALOGO } from '../../core/models/usuario.model';
 import { UsuarioService } from '../usuario.service';
+import { PermisosService } from '../../core/services/permisos.service';
+import { mensajeErrorApi } from '../../core/utils/api-error.helper';
 
 @Component({
   selector: 'app-usuario-form',
@@ -21,13 +23,14 @@ export class UsuarioFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
+    private permisos: PermisosService,
     private snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<UsuarioFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UsuarioResponse | null
   ) {
     this.form = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      username: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(20)]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(20)]],
       roles: [[], [Validators.required]]
     });
   }
@@ -47,6 +50,12 @@ export class UsuarioFormComponent implements OnInit {
   }
 
   guardar(): void {
+    if (!this.permisos.administrar || this.guardando) return;
+    if (this.esEdicion) {
+      this.mostrarMensaje('La edición de usuarios todavía no está disponible.');
+      return;
+    }
+    this.form.patchValue({ username: String(this.form.value.username ?? '').trim() });
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -55,9 +64,8 @@ export class UsuarioFormComponent implements OnInit {
     this.guardando = true;
     const request: UsuarioRequest = this.form.getRawValue();
 
-    const obs = this.esEdicion
-      ? this.usuarioService.actualizar(this.data!.username, request)
-      : this.usuarioService.registrar(request);
+    const obs = this.usuarioService.registrar(request);
+    this.dialogRef.disableClose = true;
 
     obs.subscribe({
       next: () => {
@@ -67,12 +75,14 @@ export class UsuarioFormComponent implements OnInit {
       },
       error: (err) => {
         this.guardando = false;
-        this.mostrarMensaje(err?.error?.message ?? 'Error al guardar el usuario');
+        this.dialogRef.disableClose = false;
+        this.mostrarMensaje(mensajeErrorApi(err, 'Error al guardar el usuario'));
       }
     });
   }
 
   cancelar(): void {
+    if (this.guardando) return;
     this.dialogRef.close(false);
   }
 

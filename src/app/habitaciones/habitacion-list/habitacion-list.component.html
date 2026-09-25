@@ -4,7 +4,7 @@
   <button mat-icon-button (click)="buscar()" [disabled]="cargando || eliminandoId !== null" matTooltip="Actualizar listado" aria-label="Actualizar listado">
     <mat-icon>refresh</mat-icon>
   </button>
-  <button mat-raised-button color="accent" (click)="abrirFormulario()" [disabled]="eliminandoId !== null">
+  <button *ngIf="permisos.administrar" mat-raised-button color="accent" (click)="abrirFormulario()" [disabled]="eliminandoId !== null">
     <mat-icon>add</mat-icon> Nueva habitación
   </button>
 </mat-toolbar>
@@ -44,8 +44,10 @@
           <button mat-icon-button color="primary" (click)="abrirFormulario(registro)" [disabled]="eliminandoId !== null || estaOcupada(registro)"
             [attr.aria-label]="'Editar ' + registro.numeroHabitacion"><mat-icon>edit</mat-icon></button>
         </span>
-        <button mat-icon-button (click)="cambiarEstado(registro)" [disabled]="eliminandoId !== null"
-          matTooltip="Cambiar estado" [attr.aria-label]="'Cambiar estado de ' + registro.numeroHabitacion"><mat-icon>sync</mat-icon></button>
+        <span [matTooltip]="estaOcupada(registro) ? 'Gestiona la ocupación desde la reserva' : 'Cambiar estado'">
+          <button mat-icon-button (click)="cambiarEstado(registro)" [disabled]="eliminandoId !== null || estaOcupada(registro)"
+            [attr.aria-label]="'Cambiar estado de ' + registro.numeroHabitacion"><mat-icon>sync</mat-icon></button>
+        </span>
         <span [matTooltip]="estaOcupada(registro) ? 'No se puede eliminar una habitación ocupada' : 'Eliminar'">
           <button mat-icon-button color="warn" (click)="eliminar(registro)" [disabled]="eliminandoId !== null || estaOcupada(registro)"
             [attr.aria-label]="'Eliminar ' + registro.numeroHabitacion"><mat-icon>delete</mat-icon></button>

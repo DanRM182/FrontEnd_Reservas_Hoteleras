@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { PermisosService } from '../../core/services/permisos.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,6 +16,7 @@ import { HuespedService } from '../huesped.service';
   styleUrl: './huesped-form.component.scss'
 })
 export class HuespedFormComponent {
+  readonly permisos = inject(PermisosService);
   form: FormGroup;
   guardando = false;
   error = '';
@@ -40,6 +42,7 @@ export class HuespedFormComponent {
   }
 
   guardar(): void {
+    if (!this.permisos.operar || (this.data && !this.permisos.administrar)) return;
     if (this.guardando) return;
     const valores = this.form.getRawValue();
     for (const campo of Object.keys(valores)) {

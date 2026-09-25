@@ -1,0 +1,5 @@
+.spacer { flex: 1 1 auto; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+table { width: 100%; }
+.error { color: var(--mat-sys-error); }
+.loading { display: flex; justify-content: center; padding: 24px; }

@@ -39,15 +39,16 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAdmin = this.authService.hasRole(ROLES[0]);
-    this.cargarHabitaciones();
-    this.cargarHuespedes();
-    this.cargarReservas();
     if(this.isAdmin) {
+      this.cargarHabitaciones();
+      this.cargarHuespedes();
+      this.cargarReservas();
       this.listarUsuarios();
     }
   }
 
   cargarHabitaciones(): void {
+    if (!this.authService.isAdmin()) return;
     this.cargandoHabitaciones = true;
     this.errorHabitaciones = false;
     this.habitacionService.listar().subscribe({
@@ -64,6 +65,7 @@ export class DashboardComponent implements OnInit {
   }
 
   cargarReservas(): void {
+    if (!this.authService.isAdmin()) return;
     this.cargandoReservas = true;
     this.errorReservas = false;
     this.reservaService.listar().subscribe({
@@ -80,6 +82,7 @@ export class DashboardComponent implements OnInit {
   }
 
   cargarHuespedes(): void {
+    if (!this.authService.isAdmin()) return;
     this.cargandoHuespedes = true;
     this.errorHuespedes = false;
     this.huespedService.listar().subscribe({
@@ -96,6 +99,7 @@ export class DashboardComponent implements OnInit {
   }
 
   listarUsuarios(): void {
+    if (!this.authService.isAdmin()) return;
     this.usuarioService.listar().subscribe({
       next: (data) => {
         this.totalUsuarios = data.length;

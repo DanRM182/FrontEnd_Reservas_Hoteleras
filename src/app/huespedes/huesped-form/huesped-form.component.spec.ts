@@ -7,6 +7,7 @@ import { throwError } from 'rxjs';
 import { HuespedesModule } from '../huespedes.module';
 import { HuespedService } from '../huesped.service';
 import { HuespedFormComponent } from './huesped-form.component';
+import { PermisosService } from '../../core/services/permisos.service';
 
 describe('Edición de huéspedes con reservas', () => {
   let service: jasmine.SpyObj<HuespedService>;
@@ -18,6 +19,7 @@ describe('Edición de huéspedes con reservas', () => {
     TestBed.configureTestingModule({
       imports: [HuespedesModule, NoopAnimationsModule],
       providers: [
+        { provide: PermisosService, useValue: { operar: true, administrar: true } },
         { provide: HuespedService, useValue: service },
         { provide: MAT_DIALOG_DATA, useValue: { id: 7, nombre: 'María de la Luz Del Río Pérez', email: 'maria@example.com', telefono: '0123456789', documento: 'ABC123', nacionalidad: 'Mexicana' } },
         { provide: MatDialogRef, useValue: { close, disableClose: false } },
