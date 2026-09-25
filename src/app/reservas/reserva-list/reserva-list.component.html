@@ -24,7 +24,7 @@
     <ng-container matColumnDef="acciones">
       <th mat-header-cell *matHeaderCellDef>Acciones</th>
       <td mat-cell *matCellDef="let r" class="acciones">
-        <button *ngIf="puedeEditar(r)" mat-icon-button (click)="abrirFormulario(r)" [disabled]="procesando || !!errorOperacion" matTooltip="Modificar fechas" aria-label="Modificar fechas"><mat-icon>edit_calendar</mat-icon></button>
+        <button *ngIf="puedeEditar(r)" mat-icon-button (click)="abrirFormulario(r)" [disabled]="procesando || !!errorOperacion" matTooltip="Modificar reserva" aria-label="Modificar reserva"><mat-icon>edit_calendar</mat-icon></button>
         <button *ngIf="puedeTransicionar(r, 2)" mat-button (click)="cambiarEstado(r, 2)" [disabled]="procesando || !!errorOperacion">Check-in</button>
         <button *ngIf="puedeTransicionar(r, 3)" mat-button (click)="cambiarEstado(r, 3)" [disabled]="procesando || !!errorOperacion">Check-out</button>
         <button *ngIf="puedeTransicionar(r, 4)" mat-button (click)="cambiarEstado(r, 4)" [disabled]="procesando || !!errorOperacion">Cancelar</button>

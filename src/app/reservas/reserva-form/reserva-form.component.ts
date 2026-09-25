@@ -30,7 +30,15 @@ export class ReservaFormComponent {
   error = '';
   bloqueo = '';
   enCurso = false;
+  get puedeCambiarHuesped(): boolean {
+    return !!this.reserva && estadoReservaId(this.reserva) === 1;
+  }
   get hoy(): string { return hoyLocal(); }
+
+  tipoDocumento(documento: string): string {
+    const tipo = (documento ?? '').split(':', 1)[0].trim().toUpperCase();
+    return tipo === 'INE' || tipo === 'PASAPORTE' ? tipo : 'Documento';
+  }
 
   constructor(
     fb: FormBuilder,
@@ -75,11 +83,13 @@ export class ReservaFormComponent {
             fechaSalida: fechaApiAInput(reserva.fechaSalida)
           });
           this.form.get('idHabitacion')?.disable();
-          this.form.get('idHuesped')?.disable();
+          if (this.puedeCambiarHuesped) this.form.get('idHuesped')?.enable();
+          else this.form.get('idHuesped')?.disable();
           if (this.enCurso) this.form.get('fechaEntrada')?.disable();
           else this.form.get('fechaEntrada')?.enable();
-          if (!puedeEditarReserva(reserva)) this.bloqueo = 'Esta reserva ya no permite modificar fechas.';
-          else if (!idHuesped || !reserva.habitacion?.id) this.bloqueo = 'No se pudo identificar de forma única al huésped o la habitación. Verifica sus registros antes de editar la reserva.';
+          if (!puedeEditarReserva(reserva)) this.bloqueo = 'Esta reserva ya no permite modificaciones.';
+          else if (!reserva.habitacion?.id || (!this.puedeCambiarHuesped && !idHuesped)) this.bloqueo = 'No se pudo identificar de forma única al huésped o la habitación. Verifica sus registros antes de editar la reserva.';
+          else if (this.puedeCambiarHuesped && !huespedes.length) this.bloqueo = 'Necesitas un huésped activo para guardar la reserva.';
         } else if (!huespedes.length || !this.habitaciones.length) {
           this.bloqueo = 'Necesitas un huésped registrado y una habitación disponible para crear una reserva.';
         }
@@ -101,10 +111,13 @@ export class ReservaFormComponent {
     }
     if (this.reserva && (!puedeEditarReserva(this.reserva) ||
         valores.idHabitacion !== this.reserva.habitacion?.id ||
-        valores.idHuesped !== resolverIdHuesped(this.reserva, this.huespedes) ||
+        (!this.puedeCambiarHuesped && valores.idHuesped !== resolverIdHuesped(this.reserva, this.huespedes)) ||
         (this.enCurso && valores.fechaEntrada !== fechaApiAInput(this.reserva.fechaEntrada)))) return;
-    if (!this.reserva && (!this.habitaciones.some(h => h.id === valores.idHabitacion) ||
-        !this.huespedes.some(h => h.id === valores.idHuesped))) return;
+    if (!this.huespedes.some(h => h.id === valores.idHuesped)) {
+      this.error = 'Selecciona un huésped activo del listado.';
+      return;
+    }
+    if (!this.reserva && !this.habitaciones.some(h => h.id === valores.idHabitacion)) return;
     const request: ReservaRequest = {
       idHabitacion: valores.idHabitacion, idHuesped: valores.idHuesped,
       fechaEntrada: fechaInputAApi(valores.fechaEntrada), fechaSalida: fechaInputAApi(valores.fechaSalida)
@@ -118,7 +131,7 @@ export class ReservaFormComponent {
     })).subscribe({
       next: () => {
         this.dialogRef.close(true);
-        this.snackBar.open(this.reserva ? 'Fechas actualizadas' : 'Reserva registrada', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(this.reserva ? 'Reserva actualizada' : 'Reserva registrada', 'Cerrar', { duration: 3000 });
       },
       error: error => {
         this.error = mensajeErrorApi(error, 'No se pudo guardar la reserva. Actualiza la disponibilidad e intenta nuevamente.');

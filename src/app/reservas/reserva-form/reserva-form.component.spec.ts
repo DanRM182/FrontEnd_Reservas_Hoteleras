@@ -61,4 +61,60 @@ describe('Formulario de reservas', () => {
     expect(c.bloqueo).toBeTruthy();
     expect(service.actualizar).not.toHaveBeenCalled();
   });
+
+  const otroHuesped = { ...huesped, id: 12, nombre: 'Laura Flores Perez', documento: 'INE:0012' };
+  const confirmada = { ...reserva, estadoReserva: 'Reservación creada', fechaEntrada: '01/12/2099' };
+
+  it('permite a USER cambiar huésped en confirmada y conserva habitación y fechas', () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: confirmada });
+    TestBed.overrideProvider(HuespedService, { useValue: { listar: () => of([huesped, otroHuesped]) } });
+    service.obtenerPorId.and.returnValue(of(confirmada));
+    const fixture = TestBed.createComponent(ReservaFormComponent);
+    fixture.detectChanges();
+    const c = fixture.componentInstance;
+    expect(c.form.get('idHuesped')?.enabled).toBeTrue();
+    expect(c.form.get('idHabitacion')?.disabled).toBeTrue();
+    expect(fixture.nativeElement.querySelector('mat-select[formControlName="idHuesped"]')).not.toBeNull();
+    c.form.patchValue({ idHuesped: 12 });
+    c.guardar();
+    expect(service.actualizar).toHaveBeenCalledWith(3, {
+      idHabitacion: 9, idHuesped: 12, fechaEntrada: '01/12/2099', fechaSalida: '31/12/2099'
+    });
+  });
+
+  it('rechaza huésped fuera del listado y cambio de habitación aunque se altere el formulario', () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: confirmada });
+    service.obtenerPorId.and.returnValue(of(confirmada));
+    const c = TestBed.createComponent(ReservaFormComponent).componentInstance;
+    c.form.patchValue({ idHuesped: 999 });
+    c.guardar();
+    expect(service.actualizar).not.toHaveBeenCalled();
+    c.form.patchValue({ idHuesped: 8, idHabitacion: 999 });
+    c.guardar();
+    expect(service.actualizar).not.toHaveBeenCalled();
+  });
+
+  it('exige selección explícita en confirmada cuando no puede identificar al huésped actual', () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: confirmada });
+    TestBed.overrideProvider(HuespedService, { useValue: { listar: () => of([otroHuesped]) } });
+    service.obtenerPorId.and.returnValue(of(confirmada));
+    const c = TestBed.createComponent(ReservaFormComponent).componentInstance;
+    expect(c.form.value.idHuesped).toBeNull();
+    c.guardar();
+    expect(service.actualizar).not.toHaveBeenCalled();
+    c.form.patchValue({ idHuesped: 12 });
+    c.guardar();
+    expect(service.actualizar).toHaveBeenCalled();
+  });
+
+  it('usa el estado actual del servidor y rechaza cambiar huésped tras check-in', () => {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: confirmada });
+    TestBed.overrideProvider(HuespedService, { useValue: { listar: () => of([huesped, otroHuesped]) } });
+    // El listado decía confirmada, pero la consulta actual ya devuelve EN_CURSO.
+    const c = TestBed.createComponent(ReservaFormComponent).componentInstance;
+    expect(c.form.get('idHuesped')?.disabled).toBeTrue();
+    c.form.patchValue({ idHuesped: 12 });
+    c.guardar();
+    expect(service.actualizar).not.toHaveBeenCalled();
+  });
 });

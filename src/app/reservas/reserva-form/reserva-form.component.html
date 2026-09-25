@@ -1,26 +1,25 @@
-<h2 mat-dialog-title>{{ data ? 'Modificar fechas de reserva' : 'Nueva reserva' }}</h2>
+<h2 mat-dialog-title>{{ data ? 'Modificar reserva' : 'Nueva reserva' }}</h2>
 <form [formGroup]="form" (ngSubmit)="guardar()">
   <mat-dialog-content>
     <div class="loading" *ngIf="cargando"><mat-spinner diameter="32" aria-label="Cargando datos"></mat-spinner></div>
     <p class="ayuda" *ngIf="!data">La habitación quedará ocupada desde el registro de la reserva.</p>
-    <p class="ayuda" *ngIf="reserva">Huésped: <strong>{{ reserva.huesped?.nombre }}</strong><br>Habitación: <strong>{{ reserva.habitacion?.numeroHabitacion }}</strong><br>{{ enCurso ? 'Solo puedes modificar la fecha de salida.' : 'Puedes modificar las fechas; huésped y habitación permanecen iguales.' }}</p>
+    <p class="ayuda" *ngIf="reserva">Huésped actual: <strong>{{ reserva.huesped?.nombre }}</strong><br>Habitación: <strong>{{ reserva.habitacion?.numeroHabitacion }}</strong><br>{{ enCurso ? 'Solo puedes modificar la fecha de salida.' : puedeCambiarHuesped ? 'Puedes modificar el huésped y las fechas. La habitación permanece igual.' : 'Esta reserva ya no permite modificaciones.' }}</p>
+    <p class="ayuda" *ngIf="puedeCambiarHuesped && !form.get('idHuesped')?.value">Selecciona un huésped activo para continuar.</p>
     <fieldset [disabled]="guardando || cargando">
-      <ng-container *ngIf="!data">
-        <mat-form-field appearance="outline">
+        <mat-form-field *ngIf="!data || puedeCambiarHuesped" appearance="outline">
           <mat-label>Huésped</mat-label>
           <mat-select formControlName="idHuesped">
-            <mat-option *ngFor="let h of huespedes" [value]="h.id" [disabled]="guardando || cargando">{{ h.nombre }} · {{ h.documento }}</mat-option>
+            <mat-option *ngFor="let h of huespedes" [value]="h.id" [disabled]="guardando || cargando">{{ h.nombre }} · {{ tipoDocumento(h.documento) }}</mat-option>
           </mat-select>
           <mat-error>Selecciona un huésped registrado.</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline">
+        <mat-form-field *ngIf="!data" appearance="outline">
           <mat-label>Habitación disponible</mat-label>
           <mat-select formControlName="idHabitacion">
             <mat-option *ngFor="let h of habitaciones" [value]="h.id" [disabled]="guardando || cargando">{{ h.numeroHabitacion }} · {{ h.tipoHabitacion }} · {{ h.precio | number:'1.2-2' }}</mat-option>
           </mat-select>
           <mat-error>Selecciona una habitación disponible.</mat-error>
         </mat-form-field>
-      </ng-container>
       <mat-form-field appearance="outline">
         <mat-label>Fecha de entrada</mat-label>
         <input matInput type="date" formControlName="fechaEntrada" [min]="enCurso ? '' : hoy">

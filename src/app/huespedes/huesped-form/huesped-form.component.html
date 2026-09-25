@@ -32,9 +32,23 @@
         <mat-error>El teléfono debe contener exactamente 10 dígitos.</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Documento de identificación</mat-label>
-        <input matInput formControlName="documento" maxlength="25">
-        <mat-error>El documento es obligatorio, con máximo 25 caracteres.</mat-error>
+        <mat-label>Tipo de documento</mat-label>
+        <mat-select formControlName="tipoDocumento" [disabled]="guardando">
+          <mat-option *ngIf="documentoAnterior" value="">Conservar documento actual</mat-option>
+          <mat-option value="INE">INE (nacionales)</mat-option>
+          <mat-option value="PASAPORTE">Pasaporte (extranjeros)</mat-option>
+        </mat-select>
+        <mat-error>Selecciona un tipo de documento.</mat-error>
+      </mat-form-field>
+      <p *ngIf="documentoAnterior && !form.get('tipoDocumento')?.value" class="ayuda">
+        Documento actual: <strong>{{ documentoAnterior }}</strong>.
+        Selecciona un tipo para reemplazarlo por su identificador completo.
+      </p>
+      <mat-form-field *ngIf="form.get('tipoDocumento')?.value" appearance="outline">
+        <mat-label>Número o identificador del documento</mat-label>
+        <input matInput formControlName="numeroDocumento" [maxlength]="maxNumeroDocumento" autocomplete="off">
+        <mat-hint>Letras y números, sin espacios. Máximo {{ maxNumeroDocumento }} caracteres.</mat-hint>
+        <mat-error>Ingresa de 1 a {{ maxNumeroDocumento }} letras o números, sin espacios ni símbolos.</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Nacionalidad</mat-label>

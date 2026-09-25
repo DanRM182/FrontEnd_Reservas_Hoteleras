@@ -1,4 +1,5 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, DestroyRef, Inject, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PermisosService } from '../../core/services/permisos.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -20,6 +21,11 @@ export class HuespedFormComponent {
   form: FormGroup;
   guardando = false;
   error = '';
+  readonly documentoAnterior: string;
+  readonly tiposDocumento = ['INE', 'PASAPORTE'];
+  get maxNumeroDocumento(): number {
+    return 25 - String(this.form.get('tipoDocumento')?.value ?? '').length - 1;
+  }
 
   constructor(
     fb: FormBuilder,
@@ -28,6 +34,10 @@ export class HuespedFormComponent {
     private dialogRef: MatDialogRef<HuespedFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: HuespedResponse | null
   ) {
+    const documento = data?.documento ?? '';
+    const partes = /^(INE|PASAPORTE):([A-Z0-9]+)$/i.exec(documento);
+    // Los documentos anteriores sin formato se conservan hasta que se elija reemplazarlos.
+    this.documentoAnterior = partes ? '' : documento;
     // No se puede separar con certeza un nombre completo que contiene apellidos compuestos.
     // Se pide confirmar los tres campos al editar para no corromper datos existentes.
     this.form = fb.group({
@@ -36,9 +46,23 @@ export class HuespedFormComponent {
       apellidoMaterno: ['', textoRequerido(2, 50)],
       email: [data?.email ?? '', [textoRequerido(8, 100), Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)]],
       telefono: [data?.telefono ?? '', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      documento: [data?.documento ?? '', textoRequerido(1, 25)],
+      tipoDocumento: [partes?.[1].toUpperCase() ?? '', this.documentoAnterior ? [] : [Validators.required]],
+      numeroDocumento: [partes?.[2] ?? ''],
       nacionalidad: [data?.nacionalidad ?? '', textoRequerido(1, 25)]
     });
+    this.actualizarValidacionDocumento();
+    this.form.get('tipoDocumento')!.valueChanges
+      .pipe(takeUntilDestroyed(inject(DestroyRef)))
+      .subscribe(() => this.actualizarValidacionDocumento());
+  }
+
+  private actualizarValidacionDocumento(): void {
+    const tipo = this.form.get('tipoDocumento')!.value;
+    const numero = this.form.get('numeroDocumento')!;
+    numero.setValidators(tipo
+      ? [textoRequerido(1, this.maxNumeroDocumento), Validators.pattern(/^[a-zA-Z0-9]+$/)]
+      : []);
+    numero.updateValueAndValidity();
   }
 
   guardar(): void {
@@ -53,7 +77,14 @@ export class HuespedFormComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const request: HuespedRequest = this.form.getRawValue();
+    const { tipoDocumento, numeroDocumento, ...datosHuesped } = this.form.getRawValue();
+    if (tipoDocumento && !this.tiposDocumento.includes(tipoDocumento)) return;
+    const request: HuespedRequest = {
+      ...datosHuesped,
+      documento: tipoDocumento
+        ? `${tipoDocumento}:${numeroDocumento.toUpperCase()}`
+        : this.documentoAnterior
+    };
     this.guardando = true;
     this.dialogRef.disableClose = true;
     this.error = '';
